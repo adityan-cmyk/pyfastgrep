@@ -9,6 +9,14 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.20", features = ["extension-module"] }
+tree-sitter = "0.20"
+tree-sitter-rust = "0.20"
+tree-sitter-python = "0.20"
+tree-sitter-c = "0.20"
+tree-sitter-cpp = "0.20"
+tree-sitter-go = "0.20"
+tree-sitter-javascript = "0.20"
+tree-sitter-typescript = "0.20"
 
 grep = "0.3"
 grep-regex = "0.1"

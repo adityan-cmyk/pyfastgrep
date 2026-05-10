@@ -3,3 +3,7 @@ python/pyfastgrep/pyfastgrep.cpython-312-darwin.so
 python/pyfastgrep/__pycache__
 target/
 venv/
+.venv/
+**/*.pyd
+**/*.pdb
+**/*.so
