@@ -1,4 +1,5 @@
 import sys
+import subprocess
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -56,12 +57,44 @@ def main():
         assert json_results[0]['line'] == legacy_results[0][1], "Line numbers should match between JSON and legacy"
         assert json_results[0]['content'].strip() == legacy_results[0][2].strip(), "Content should match between JSON and legacy"
 
+    def test_cli_smoke():
+        cli_result = subprocess.run(
+            [
+                "cargo",
+                "run",
+                "-p",
+                "pyfastgrep-cli",
+                "--",
+                "fn",
+                "src",
+                "--glob",
+                "*.rs",
+                "--ignore-case",
+            ],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+        )
+
+        assert cli_result.returncode == 0, f"CLI exited with {cli_result.returncode}: {cli_result.stderr}"
+        assert "src\\lib.rs" in cli_result.stdout, "CLI output should include the Rust source file"
+
+    def test_ergonomic_aliases():
+        alias_results = pyfastgrep.search("FN", root=source_root, glob="*.rs", case_insensitive=True, limit=2)
+        alias_iter = list(pyfastgrep.search_iter("FN", root=source_root, glob="*.rs", case_insensitive=True))
+
+        assert len(alias_results) > 0, "Alias-based search should find results"
+        assert len(alias_iter) > 0, "Alias-based iterator search should find results"
+        assert len(alias_results) <= 2, "limit alias should cap the batch results"
+
     tests = [
         ("Case-sensitive search returns no matches", test_case_sensitive_search),
         ("Ignore-case batch search finds matches", test_ignore_case_search),
         ("Iterator search matches batch count", test_iterator_matches_batch),
         ("JSON output works for batch and iterator", test_json_output),
         ("Legacy tuple output stays compatible", test_legacy_output_and_consistency),
+        ("CLI smoke test passes", test_cli_smoke),
+        ("Ergonomic aliases work", test_ergonomic_aliases),
     ]
 
     passed = 0

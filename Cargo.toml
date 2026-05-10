@@ -3,18 +3,16 @@ name = "pyfastgrep"
 version = "0.1.1"
 edition = "2021"
 
+[workspace]
+members = ["crates/core", "cli"]
+resolver = "2"
+
 [lib]
 name = "pyfastgrep"
 crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.20", features = ["extension-module"] }
+pyfastgrep-core = { path = "crates/core" }
 
-grep = "0.3"
-grep-regex = "0.1"
-grep-searcher = "0.1"
-ignore = "0.4"
-rayon = "1.8"
-crossbeam-channel = "0.5"
-globset = "0.4"
 serde_json = "1.0"

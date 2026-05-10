@@ -33,6 +33,13 @@
    maturin develop
    ```
 
+## Repository Layout
+
+- `crates/core/` holds the shared search engine
+- `pyfastgrep/` holds the Python binding layer
+- `cli/` holds the thin command line interface
+- `scripts/pre-push` is the tracked pre-push hook source
+
 ## Running Tests
 
 ```bash

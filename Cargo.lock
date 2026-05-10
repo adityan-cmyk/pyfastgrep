@@ -320,15 +320,31 @@ dependencies = [
 name = "pyfastgrep"
 version = "0.1.1"
 dependencies = [
+ "pyfastgrep-core",
+ "pyo3",
+ "serde_json",
+]
+
+[[package]]
+name = "pyfastgrep-cli"
+version = "0.1.1"
+dependencies = [
+ "pyfastgrep-core",
+ "serde_json",
+]
+
+[[package]]
+name = "pyfastgrep-core"
+version = "0.1.1"
+dependencies = [
  "crossbeam-channel",
  "globset",
  "grep",
  "grep-regex",
  "grep-searcher",
  "ignore",
- "pyo3",
  "rayon",
- "serde_json",
+ "serde",
 ]
 
 [[package]]
@@ -477,6 +493,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9a8e94ea7f378bd32cbbd37198a4a91436180c5bb472411e48b5ec2e2124ae9e"
 dependencies = [
  "serde_core",
+ "serde_derive",
 ]
 
 [[package]]
