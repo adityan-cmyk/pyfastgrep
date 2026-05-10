@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-use grep::regex::RegexMatcher;
+use grep::regex::{RegexMatcher, RegexMatcherBuilder};
 use grep::searcher::{SearcherBuilder, sinks::UTF8};
 use ignore::WalkBuilder;
 
@@ -30,8 +30,12 @@ fn search(
     root: String,
     glob: Option<String>,
     max_results: Option<usize>,
+    ignore_case: Option<bool>,
 ) -> PyResult<Vec<(String, usize, String)>> {
-    let matcher = RegexMatcher::new(&pattern)
+    let is_case_insensitive = ignore_case.unwrap_or(false);
+    let matcher = RegexMatcherBuilder::new()
+        .case_insensitive(is_case_insensitive)
+        .build(&pattern)
         .map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))?;
 
     let glob_matcher: Option<GlobSet> = build_glob(&glob);
@@ -116,11 +120,17 @@ fn search_iter(
     pattern: String,
     root: String,
     glob: Option<String>,
+    ignore_case: Option<bool>,
 ) -> PyResult<PyResultIterator> {
     let (tx, rx) = bounded(1000);
 
+    let is_case_insensitive = ignore_case.unwrap_or(false);
+
     thread::spawn(move || {
-        let matcher = match RegexMatcher::new(&pattern) {
+        let matcher = match RegexMatcherBuilder::new()
+            .case_insensitive(is_case_insensitive)
+            .build(&pattern)
+        {
             Ok(m) => m,
             Err(_) => return,
         };
