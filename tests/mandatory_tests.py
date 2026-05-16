@@ -1,4 +1,5 @@
 import sys
+import os
 import subprocess
 import tempfile
 from pathlib import Path
@@ -131,7 +132,7 @@ def main():
         )
 
         assert cli_result.returncode == 0, f"CLI exited with {cli_result.returncode}: {cli_result.stderr}"
-        assert "src\\lib.rs" in cli_result.stdout, "CLI output should include the Rust source file"
+        assert os.path.join("src", "lib.rs") in cli_result.stdout, "CLI output should include the Rust source file"
 
     def test_ergonomic_aliases():
         alias_results = pyfastgrep.search("FN", root=source_root, glob="*.rs", case_insensitive=True, limit=2)
