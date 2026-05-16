@@ -142,6 +142,52 @@ def main():
         assert len(alias_iter) > 0, "Alias-based iterator search should find results"
         assert len(alias_results) <= 2, "limit alias should cap the batch results"
 
+    def test_ast_functions():
+        results = pyfastgrep.search_functions("build_config", source_root, "*.rs")
+        assert len(results) > 0, "AST function search should find build_config"
+        assert any("lib.rs" in r[0] for r in results), "Should be in lib.rs"
+
+    def test_ast_classes():
+        results = pyfastgrep.search_classes("PyResultIterator", source_root, "*.rs")
+        assert len(results) > 0, "AST class search should find PyResultIterator"
+
+    def test_ast_imports():
+        results = pyfastgrep.search_imports("pyo3", source_root, "*.rs")
+        assert len(results) > 0, "AST import search should find pyo3 imports"
+
+    def test_ast_iterator_matches_batch():
+        batch = pyfastgrep.search_functions("build_config", source_root, "*.rs")
+        streamed = list(pyfastgrep.search_functions_iter("build_config", source_root, "*.rs"))
+        assert len(streamed) == len(batch), "AST batch and iterator counts should match"
+
+    def test_ast_glob_filter():
+        with_glob = pyfastgrep.search_functions("build_config", source_root, "*.rs")
+        without_glob = pyfastgrep.search_functions("build_config", source_root)
+        assert len(with_glob) > 0, "With glob should find results"
+        assert len(without_glob) >= len(with_glob), "Without glob should find equal or more"
+
+    def test_cli_ast_functions():
+        cli_result = subprocess.run(
+            [
+                "cargo",
+                "run",
+                "-p",
+                "pyfastgrep-cli",
+                "--",
+                "build_config",
+                "src",
+                "--glob",
+                "*.rs",
+                "--functions",
+            ],
+            cwd=str(REPO_ROOT),
+            capture_output=True,
+            text=True,
+        )
+
+        assert cli_result.returncode == 0, f"CLI AST exited with {cli_result.returncode}: {cli_result.stderr}"
+        assert os.path.join("src", "lib.rs") in cli_result.stdout, "CLI AST output should include lib.rs"
+
     tests = [
         ("Case-sensitive search returns no matches", test_case_sensitive_search),
         ("Ignore-case batch search finds matches", test_ignore_case_search),
@@ -152,6 +198,12 @@ def main():
         ("CLI smoke test passes", test_cli_smoke),
         ("CLI CSV output passes", test_cli_csv),
         ("Ergonomic aliases work", test_ergonomic_aliases),
+        ("AST function search finds matches", test_ast_functions),
+        ("AST class search finds matches", test_ast_classes),
+        ("AST import search finds matches", test_ast_imports),
+        ("AST iterator matches batch count", test_ast_iterator_matches_batch),
+        ("AST glob filter works", test_ast_glob_filter),
+        ("CLI AST functions works", test_cli_ast_functions),
     ]
 
     passed = 0

@@ -12,18 +12,7 @@ name = "pyfastgrep"
 crate-type = ["cdylib"]
 
 [dependencies]
-pyo3 = { version = "0.20", features = ["extension-module"] }
+pyo3 = { version = "0.28.3", features = ["extension-module"] }
 pyfastgrep-core = { path = "crates/core" }
-tree-sitter = "0.20"
-tree-sitter-rust = "0.20"
-tree-sitter-python = "0.20"
-tree-sitter-c = "0.20"
-tree-sitter-cpp = "0.20"
-tree-sitter-go = "0.20"
-tree-sitter-javascript = "0.20"
-tree-sitter-typescript = "0.20"
-ignore = "0.4"
-rayon = "1.8"
-globset = "0.4"
 
 serde_json = "1.0"

@@ -84,9 +84,41 @@ CLI flags at a glance:
 pyfastgrep <pattern> [root] [--glob <pattern>] [--limit <n>] [--ignore-case] [--json] [--csv] [--output <file>] [--root <path>]
 ```
 
+### AST-powered semantic search
+
+Search by structure, not just text:
+
+```python
+# Find functions by name
+pyfastgrep.search_functions("main", "src", "*.py")
+
+# Find classes/structs by name
+pyfastgrep.search_classes("MyClass", "src", "*.py")
+
+# Find imports/use statements
+pyfastgrep.search_imports("requests", "src", "*.py")
+
+# Streaming AST search
+for match in pyfastgrep.search_functions_iter("main", "src", "*.py"):
+    print(match)
+```
+
+Supported languages: Rust, Python, C, C++, Go, JavaScript, TypeScript.
+
+### CLI AST search
+
+```bash
+pyfastgrep build_config src --glob "*.rs" --functions
+pyfastgrep PyResultIterator src --glob "*.rs" --classes
+pyfastgrep pyo3 src --glob "*.rs" --imports
+```
+
 ## Features
-1. Uses ripgrep internals (fast)
+1. Uses ripgrep internals (fast regex search)
 2. Parallel search
 3. Respects .gitignore
-4. Python-friendly API
+4. Python-friendly API with ergonomic aliases
 5. Thin CLI over the same Rust core
+6. AST-powered semantic search (functions, classes, imports)
+7. Streaming iterators for both regex and AST search
+8. JSON, CSV, and tuple output modes
